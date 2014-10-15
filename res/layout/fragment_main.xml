@@ -10,12 +10,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.bobpaulin.droidnxtdistancetracker.MainActivity" >
 
-    <TextView
-        android:id="@+id/section_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_main" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,13 +19,15 @@
             android:id="@+id/distance_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/distance_label" />
+            android:text="@string/distance_label"
+            android:textSize="40sp" />
 
         <TextView
             android:id="@+id/distance_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0" />
+            android:text="0"
+            android:textSize="40sp" />
 
     </LinearLayout>
 

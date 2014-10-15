@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class LogFragment extends AbstractNxtFragment {
 	
@@ -24,9 +25,9 @@ public class LogFragment extends AbstractNxtFragment {
             @Override
             public void handleMessage(Message msg) {
                 switch (msg.what) {
-                case NXTConstants.MESSAGE_EDIT_TEXT:
-                	editText.getText().append(msg.getData().getString(NXTConstants.TOAST) + "\n");
-                	break;
+                	case NXTConstants.MESSAGE_EDIT_TEXT:
+                		editText.getText().append(msg.getData().getString(NXTConstants.LOG_MESSAGE) + "\n");
+                		break;
                 }
             }});
         

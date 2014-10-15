@@ -4,7 +4,7 @@
     <string name="app_name">DroidNxtDistanceTracker</string>
     <string name="title_section1">Main</string>
     <string name="title_section2">Logs</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="log_label">Log Messages:</string>
     <string name="hello_main">Hello main!</string>
     <string name="connect">Connect</string>
     <string name="disconnect">Disconnect</string>

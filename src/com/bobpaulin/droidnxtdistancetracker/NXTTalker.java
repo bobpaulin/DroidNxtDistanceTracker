@@ -60,9 +60,25 @@ public class NXTTalker {
         if (mHandlerList != null) {
         	for(Handler currentHandler: mHandlerList)
         	{
-        		Message msg = currentHandler.obtainMessage(NXTConstants.MESSAGE_EDIT_TEXT);
+        		Message msg = currentHandler.obtainMessage(NXTConstants.MESSAGE_TOAST);
                 Bundle bundle = new Bundle();
                 bundle.putString(NXTConstants.TOAST, text);
+                msg.setData(bundle);
+                currentHandler.sendMessage(msg);
+        	}
+            
+        } else {
+            //XXX
+        }
+    }
+    
+    private void log(String text) {
+        if (mHandlerList != null) {
+        	for(Handler currentHandler: mHandlerList)
+        	{
+        		Message msg = currentHandler.obtainMessage(NXTConstants.MESSAGE_EDIT_TEXT);
+                Bundle bundle = new Bundle();
+                bundle.putString(NXTConstants.LOG_MESSAGE, text);
                 msg.setData(bundle);
                 currentHandler.sendMessage(msg);
         	}
@@ -109,7 +125,7 @@ public class NXTTalker {
         DistanceThread distThread = new DistanceThread();
         distThread.start();
         
-        toast("Connected to " + device.getName());
+        log("Connected to " + device.getName());
         
         setState(STATE_CONNECTED);
     }
@@ -129,12 +145,12 @@ public class NXTTalker {
     
     private void connectionFailed() {
         setState(STATE_NONE);
-        toast("Connection failed");
+        log("Connection failed");
     }
     
     private void connectionLost() {
         setState(STATE_NONE);
-        toast("Connection lost");
+        log("Connection lost");
     }
     
     public void motors(byte l, byte r, boolean speedReg, boolean motorSync) {
@@ -201,7 +217,7 @@ public class NXTTalker {
     
     public void initUltrasonic()
     {
-    	toast("Init Ultrasonic");
+    	log("Init Ultrasonic");
     	byte[] data = {0x08, 0x00, 0x00, 0x0f, 0x03, 0x03, 0x00, 0x02, 0x41, 0x02,
     			0x05, 0x00, (byte) 0x00, 0x05, 0x03, 0x0b, 0x00};
     	write(data);
@@ -209,21 +225,21 @@ public class NXTTalker {
     
     public void requestDistance()
     {
-    	toast("Request Distance");
+    	log("Request Distance");
     	byte[] data = {0x07, 0x00, (byte) 0x00, 0x0F, 0x03, 0x02, 0x01, 0x02, 0x42};
     	write(data);
     }
     
     public void requestStatus()
     {
-    	toast("Request Status");
+    	log("Request Status");
     	byte[] data = {0x3, 0x00, 0x00, 0x0e, 0x03};
     	write(data);
     }
     
     public void readDistance()
     {
-    	toast("Read Distance");
+    	log("Read Distance");
     	byte[] data = {0x3, 0x00, 0x00, 0x10, 0x03};
     	write(data);
     }
@@ -321,13 +337,13 @@ public class NXTTalker {
             while (true) {
                 try {
                 	
-                	toast("Starting Read");
+                	log("Starting Read");
                 	int bytes;
                     int currentPosition = 0;
                     int endPosition = 0;
                     int startPosition = 0;
                 		bytes = mmInStream.read(buffer);
-                		toast("Read Size: " + bytes);
+                		log("Read Size: " + bytes);
                 		endPosition = startPosition + buffer[startPosition] + 2;
                         
                         while(currentPosition < bytes -1)
@@ -338,7 +354,7 @@ public class NXTTalker {
                             	message = message + " " + Byte.toString(buffer[i]);
                             }
                             
-                            toast(message);
+                            log(message);
                             
                             	msDelay(1000);
 							
@@ -349,11 +365,11 @@ public class NXTTalker {
                         
                 	
                     
-                    //toast(Integer.toString(bytes) + " bytes read from device");
+                    //log(Integer.toString(bytes) + " bytes read from device");
                 } catch (IOException e) {
                     e.printStackTrace();
                     connectionLost();
-                    toast("Boom");
+                    log("Boom");
                     break;
                 }
             }
@@ -364,7 +380,7 @@ public class NXTTalker {
                 mmOutStream.write(buffer);
             } catch (IOException e) {
                 e.printStackTrace();
-                toast("Write failed");
+                log("Write failed");
                 // XXX?
             }
         }

@@ -14,9 +14,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
@@ -81,7 +84,18 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         
         nxtTalker = new NXTTalker();
         
-       
+        nxtTalker.addHandler(new Handler(){
+        	@Override
+        	public void dispatchMessage(Message msg) {
+        		switch (msg.what)
+        		{
+        			case NXTConstants.MESSAGE_TOAST:
+        				Toast.makeText(getApplicationContext(), msg.getData().getString(NXTConstants.TOAST), Toast.LENGTH_SHORT).show();
+            			break;
+        		}
+        	
+        	}
+        });
     }
 
 

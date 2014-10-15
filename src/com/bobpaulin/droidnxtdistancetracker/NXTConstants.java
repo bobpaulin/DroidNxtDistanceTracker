@@ -6,4 +6,5 @@ public class NXTConstants {
     public static final int MESSAGE_EDIT_TEXT = 3;
     public static final int MESSAGE_UPDATE_DISTANCE = 4;
     public static final String TOAST = "toast";
+    public static final String LOG_MESSAGE = "log_message";
 }
