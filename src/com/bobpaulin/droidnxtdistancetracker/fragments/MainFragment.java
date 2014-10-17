@@ -5,6 +5,7 @@ import java.util.Set;
 import com.bobpaulin.droidnxtdistancetracker.NXTConstants;
 import com.bobpaulin.droidnxtdistancetracker.NXTTalker;
 import com.bobpaulin.droidnxtdistancetracker.R;
+import com.bobpaulin.droidnxtdistancetracker.handleraction.HandlerAction;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -70,10 +71,11 @@ public class MainFragment extends AbstractNxtFragment {
                 getTalker().connect(device);
             }
         });
-        getTalker().addHandler(new Handler(){
-        	@Override
-        	public void dispatchMessage(Message msg) {
-        		if(msg.what == NXTConstants.MESSAGE_STATE_CHANGE)
+        getHandler().registerHandlerAction(new HandlerAction() {
+			
+			@Override
+			public void executeHandlerAction(Message msg) {
+				if(msg.what == NXTConstants.MESSAGE_STATE_CHANGE)
         		{
         			switch(msg.arg1){
         				case NXTTalker.STATE_NONE:
@@ -87,8 +89,9 @@ public class MainFragment extends AbstractNxtFragment {
         					break;
         			}
         		}
-        	}
-        });
+				
+			}
+		});
         return rootView;
     }
 	

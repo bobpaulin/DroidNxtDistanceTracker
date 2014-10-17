@@ -5,6 +5,7 @@ import java.util.Locale;
 import com.bobpaulin.droidnxtdistancetracker.fragments.AbstractNxtFragment;
 import com.bobpaulin.droidnxtdistancetracker.fragments.LogFragment;
 import com.bobpaulin.droidnxtdistancetracker.fragments.MainFragment;
+import com.bobpaulin.droidnxtdistancetracker.handleraction.HandlerAction;
 import com.bobpaulin.droidnxtdistancetracker.NXTTalker;
 
 import android.support.v7.app.ActionBarActivity;
@@ -25,6 +26,8 @@ import android.widget.Toast;
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
 	
 	private NXTTalker nxtTalker;
+	
+	private NXTHandler nxtHandler;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -80,22 +83,22 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                             .setTabListener(this));
         }
         
+        nxtHandler = new NXTHandler();
         
+        nxtTalker = new NXTTalker(nxtHandler);
         
-        nxtTalker = new NXTTalker();
-        
-        nxtTalker.addHandler(new Handler(){
-        	@Override
-        	public void dispatchMessage(Message msg) {
-        		switch (msg.what)
+        nxtHandler.registerHandlerAction(new HandlerAction() {
+			
+			@Override
+			public void executeHandlerAction(Message msg) {
+				switch (msg.what)
         		{
         			case NXTConstants.MESSAGE_TOAST:
         				Toast.makeText(getApplicationContext(), msg.getData().getString(NXTConstants.TOAST), Toast.LENGTH_SHORT).show();
             			break;
         		}
-        	
-        	}
-        });
+			}
+		});
     }
 
 
@@ -156,6 +159,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         			result = new MainFragment();
         	}
             result.setTalker(nxtTalker);
+            result.setHandler(nxtHandler);
             return result;
         }
 

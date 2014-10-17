@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.ArrayUtils;
+
+import com.bobpaulin.droidnxtdistancetracker.command.CommandType;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -21,35 +25,26 @@ public class NXTTalker {
     public static final int STATE_CONNECTING = 1;
     public static final int STATE_CONNECTED = 2;
     
+    private static final byte[] DISTANCE_RESPONSE_PREFIX = {0x02, 0x10, 0x00};
+    
     private int mState;
-    private List<Handler> mHandlerList;
+    private NXTHandler nxtHandler;
     private BluetoothAdapter mAdapter;
     
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     
-    public NXTTalker() {
+    public NXTTalker(NXTHandler nxtHandler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
-        mHandlerList = new ArrayList<Handler>();
+        this.nxtHandler = nxtHandler;
         setState(STATE_NONE);
-    }
-    
-    public void addHandler(Handler handler)
-    {
-    	mHandlerList.add(handler);
     }
 
     private synchronized void setState(int state) {
         mState = state;
-        if (mHandlerList != null) {
-        	for(Handler currentHandler: mHandlerList)
-        	{
-        		currentHandler.obtainMessage(NXTConstants.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
-        	}
-            
-        } else {
-            //XXX
-        }
+     
+        nxtHandler.obtainMessage(NXTConstants.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
+       
     }
     
     public synchronized int getState() {
@@ -57,35 +52,22 @@ public class NXTTalker {
     }
     
     private void toast(String text) {
-        if (mHandlerList != null) {
-        	for(Handler currentHandler: mHandlerList)
-        	{
-        		Message msg = currentHandler.obtainMessage(NXTConstants.MESSAGE_TOAST);
-                Bundle bundle = new Bundle();
-                bundle.putString(NXTConstants.TOAST, text);
-                msg.setData(bundle);
-                currentHandler.sendMessage(msg);
-        	}
-            
-        } else {
-            //XXX
-        }
+
+        Message msg = nxtHandler.obtainMessage(NXTConstants.MESSAGE_TOAST);
+        Bundle bundle = new Bundle();
+        bundle.putString(NXTConstants.TOAST, text);
+        msg.setData(bundle);
+        nxtHandler.sendMessage(msg);
+       
     }
     
     private void log(String text) {
-        if (mHandlerList != null) {
-        	for(Handler currentHandler: mHandlerList)
-        	{
-        		Message msg = currentHandler.obtainMessage(NXTConstants.MESSAGE_EDIT_TEXT);
-                Bundle bundle = new Bundle();
-                bundle.putString(NXTConstants.LOG_MESSAGE, text);
-                msg.setData(bundle);
-                currentHandler.sendMessage(msg);
-        	}
-            
-        } else {
-            //XXX
-        }
+        
+        Message msg = nxtHandler.obtainMessage(NXTConstants.MESSAGE_EDIT_TEXT);
+        Bundle bundle = new Bundle();
+        bundle.putString(NXTConstants.LOG_MESSAGE, text);
+        msg.setData(bundle);
+        nxtHandler.sendMessage(msg);
     }
 
     public synchronized void connect(BluetoothDevice device) {
@@ -331,6 +313,12 @@ public class NXTTalker {
             mmOutStream = tmpOut;
         }
         
+        private void processMessage(byte[] message)
+        {
+        	byte[] commandMessage = ArrayUtils.subarray(message, 2, message.length);
+        	CommandType.sendCommandToMessage(commandMessage, nxtHandler);
+        }
+        
         public void run() {
             byte[] buffer = new byte[1024];
             
@@ -349,11 +337,14 @@ public class NXTTalker {
                         while(currentPosition < bytes -1)
                         {
                         	String message = "Message: ";
+                        	int messageLength = (endPosition + 1) - startPosition;
+                        	byte[] byteMessage = new byte[messageLength];
                         	for(int i = startPosition; i < endPosition; i++)
                             {
                             	message = message + " " + Byte.toString(buffer[i]);
+                            	byteMessage[i-startPosition] = buffer[i];
                             }
-                            
+                            processMessage(byteMessage);
                             log(message);
                             
                             	msDelay(1000);

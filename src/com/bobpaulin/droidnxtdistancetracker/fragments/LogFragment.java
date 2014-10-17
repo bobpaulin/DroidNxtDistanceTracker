@@ -2,6 +2,7 @@ package com.bobpaulin.droidnxtdistancetracker.fragments;
 
 import com.bobpaulin.droidnxtdistancetracker.NXTConstants;
 import com.bobpaulin.droidnxtdistancetracker.R;
+import com.bobpaulin.droidnxtdistancetracker.handleraction.HandlerAction;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,15 +22,18 @@ public class LogFragment extends AbstractNxtFragment {
         
         final EditText editText = (EditText) rootView.findViewById(R.id.editText1);
         
-        getTalker().addHandler(new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                	case NXTConstants.MESSAGE_EDIT_TEXT:
-                		editText.getText().append(msg.getData().getString(NXTConstants.LOG_MESSAGE) + "\n");
-                		break;
-                }
-            }});
+        getHandler().registerHandlerAction(new HandlerAction() {
+			
+			@Override
+			public void executeHandlerAction(Message msg) {
+				switch (msg.what) {
+            	case NXTConstants.MESSAGE_EDIT_TEXT:
+            		editText.getText().append(msg.getData().getString(NXTConstants.LOG_MESSAGE) + "\n");
+            		break;
+            }
+				
+			}
+		});
         
         return rootView;
     }
