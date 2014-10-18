@@ -5,6 +5,7 @@ import java.util.Set;
 import com.bobpaulin.droidnxtdistancetracker.NXTConstants;
 import com.bobpaulin.droidnxtdistancetracker.NXTTalker;
 import com.bobpaulin.droidnxtdistancetracker.R;
+import com.bobpaulin.droidnxtdistancetracker.command.DistanceResponse;
 import com.bobpaulin.droidnxtdistancetracker.handleraction.HandlerAction;
 
 import android.app.Activity;
@@ -18,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainFragment extends AbstractNxtFragment {
@@ -28,6 +30,8 @@ public class MainFragment extends AbstractNxtFragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         
         final Button exitButton = (Button) rootView.findViewById(R.id.exitButton);
+        
+        final TextView distanceValueText = (TextView) rootView.findViewById(R.id.distance_value);
         
         final Button disconnectButton = (Button) rootView.findViewById(R.id.disconnectButton);
         
@@ -88,6 +92,10 @@ public class MainFragment extends AbstractNxtFragment {
         					connectButton.setVisibility(View.INVISIBLE);
         					break;
         			}
+        		} else if (msg.what == NXTConstants.MESSAGE_NXT_RESPONSE)
+        		{
+        			DistanceResponse response = (DistanceResponse) msg.obj;
+        			distanceValueText.setText(Integer.toString(response.getDistance()));
         		}
 				
 			}
