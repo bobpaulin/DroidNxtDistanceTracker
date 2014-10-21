@@ -1,5 +1,13 @@
 package com.bobpaulin.droidnxtdistancetracker;
 
+
+/**
+ * 
+ * Constants for Messages and Types
+ * 
+ * @author bpaulin
+ *
+ */
 public class NXTConstants {
 	public static final int MESSAGE_TOAST = 1;
     public static final int MESSAGE_STATE_CHANGE = 2;

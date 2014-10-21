@@ -5,6 +5,13 @@ import android.support.v4.app.Fragment;
 import com.bobpaulin.droidnxtdistancetracker.NXTHandler;
 import com.bobpaulin.droidnxtdistancetracker.NXTTalker;
 
+/**
+ * 
+ * Abstract UI Fragment for screens that interact with NXT
+ * 
+ * @author bpaulin
+ *
+ */
 public abstract class AbstractNxtFragment extends Fragment {
 	private NXTTalker talker;
 	

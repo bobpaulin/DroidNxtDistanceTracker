@@ -20,6 +20,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+
+/**
+ * 
+ * UI Fragment that connects and displays distance sensor readings from NXT.
+ * 
+ * @author bpaulin
+ *
+ */
 public class MainFragment extends AbstractNxtFragment {
 	private BluetoothAdapter mBtAdapter;
 	

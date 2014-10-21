@@ -13,6 +13,13 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * 
+ * UI Fragment that logs messages from NXT
+ * 
+ * @author bpaulin
+ *
+ */
 public class LogFragment extends AbstractNxtFragment {
 	
 	@Override

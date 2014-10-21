@@ -15,14 +15,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-
+/**
+ * 
+ * Main Android Activity for UI
+ * 
+ * @author bpaulin
+ *
+ */
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
 	
 	private NXTTalker nxtTalker;

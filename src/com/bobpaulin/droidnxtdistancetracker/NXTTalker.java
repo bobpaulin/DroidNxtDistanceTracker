@@ -19,6 +19,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+/**
+ * 
+ * Class that holds logic for managing state and communicating with the NXT over bluetooth.
+ * 
+ * @author bpaulin
+ *
+ */
 public class NXTTalker {
 
     public static final int STATE_NONE = 0;

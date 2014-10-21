@@ -9,6 +9,13 @@ import com.bobpaulin.droidnxtdistancetracker.NXTHandler;
 
 import android.os.Message;
 
+/**
+ * 
+ * Types of NXT Responses that might return be returned from the device
+ * 
+ * @author bpaulin
+ *
+ */
 public enum CommandType {
 	DISTANCE_RESPONSE(DistanceResponse.class, (byte)0x02, (byte)0x10, (byte)0x00);
 	private Class commandClass;

@@ -8,6 +8,13 @@ import com.bobpaulin.droidnxtdistancetracker.handleraction.HandlerAction;
 import android.os.Handler;
 import android.os.Message;
 
+/**
+ * 
+ * Custom handler for interacting with NXT.
+ * 
+ * @author bpaulin
+ *
+ */
 public class NXTHandler extends Handler {
 	
 	private List<HandlerAction> registeredHandlerActions;
