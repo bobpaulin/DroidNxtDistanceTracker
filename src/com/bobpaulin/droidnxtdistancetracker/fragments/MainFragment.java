@@ -8,7 +8,6 @@ import com.bobpaulin.droidnxtdistancetracker.R;
 import com.bobpaulin.droidnxtdistancetracker.command.DistanceResponse;
 import com.bobpaulin.droidnxtdistancetracker.handleraction.HandlerAction;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
@@ -20,10 +19,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainFragment extends AbstractNxtFragment {
 	private BluetoothAdapter mBtAdapter;
+	
+	private boolean motorRunning = false;
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
@@ -41,6 +41,8 @@ public class MainFragment extends AbstractNxtFragment {
 			
 			@Override
 			public void onClick(View v) {
+				getTalker().motors((byte)0, (byte) 0, false, true);
+				motorRunning = false;
 				getTalker().stop();
 			}
 		});
@@ -95,7 +97,18 @@ public class MainFragment extends AbstractNxtFragment {
         		} else if (msg.what == NXTConstants.MESSAGE_NXT_RESPONSE)
         		{
         			DistanceResponse response = (DistanceResponse) msg.obj;
-        			distanceValueText.setText(Integer.toString(response.getDistance()));
+        			int distance = response.getDistance();
+        			distanceValueText.setText(Integer.toString(distance));
+        			if(distance > 20 && !motorRunning)
+        			{
+        				getTalker().motors((byte)20, (byte)20, false, true);
+        				motorRunning = true;
+        			}
+        			else if(distance <= 20 && motorRunning){
+        				getTalker().motors((byte)0, (byte) 0, false, true);
+        				motorRunning = false;
+        			}
+        			
         		}
 				
 			}

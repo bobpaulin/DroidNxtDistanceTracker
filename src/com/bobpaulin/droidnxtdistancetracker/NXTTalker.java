@@ -25,14 +25,13 @@ public class NXTTalker {
     public static final int STATE_CONNECTING = 1;
     public static final int STATE_CONNECTED = 2;
     
-    private static final byte[] DISTANCE_RESPONSE_PREFIX = {0x02, 0x10, 0x00};
-    
     private int mState;
     private NXTHandler nxtHandler;
     private BluetoothAdapter mAdapter;
     
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
+    private DistanceThread mDistanceThread;
     
     public NXTTalker(NXTHandler nxtHandler) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -101,11 +100,18 @@ public class NXTTalker {
             mConnectedThread = null;
         }
         
+        if (mDistanceThread != null) {
+        	mDistanceThread.cancel();
+        	mDistanceThread = null;
+        }
+        
         mConnectedThread = new ConnectedThread(socket);
         mConnectedThread.start();
         
-        DistanceThread distThread = new DistanceThread();
-        distThread.start();
+        mDistanceThread = new DistanceThread();
+        mDistanceThread.start();
+        
+        
         
         log("Connected to " + device.getName());
         
@@ -122,6 +128,11 @@ public class NXTTalker {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
+        
+        if(mDistanceThread != null) {
+        	mDistanceThread.cancel();
+        	mDistanceThread = null;
+        }
         setState(STATE_NONE);
     }
     
@@ -137,55 +148,12 @@ public class NXTTalker {
     
     public void motors(byte l, byte r, boolean speedReg, boolean motorSync) {
         byte[] data = { 0x0c, 0x00, (byte) 0x80, 0x04, 0x02, 0x32, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
-                        0x0c, 0x00, (byte) 0x80, 0x04, 0x01, 0x32, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
-                        0x0c, 0x00, (byte) 0x00, 0x05, 0x03, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                        0x0c, 0x00, (byte) 0x00, 0x07, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; //also ping distance
+                        0x0c, 0x00, (byte) 0x80, 0x04, 0x01, 0x32, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00};
         
         //Log.i("NXT", "motors: " + Byte.toString(l) + ", " + Byte.toString(r));
         
         data[5] = l;
         data[19] = r;
-        if (speedReg) {
-            data[7] |= 0x01;
-            data[21] |= 0x01;
-        }
-        if (motorSync) {
-            data[7] |= 0x02;
-            data[21] |= 0x02;
-        }
-        write(data);
-    }
-    
-    public void motor(int motor, byte power, boolean speedReg, boolean motorSync) {
-        byte[] data = { 0x0c, 0x00, (byte) 0x80, 0x04, 0x02, 0x32, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00};//Also request Distance
-        
-        //Log.i("NXT", "motor: " + Integer.toString(motor) + ", " + Byte.toString(power));
-        
-        if (motor == 0) {
-            data[4] = 0x02;
-        } else {
-            data[4] = 0x01;
-        }
-        data[5] = power;
-        if (speedReg) {
-            data[7] |= 0x01;
-        }
-        if (motorSync) {
-            data[7] |= 0x02;
-        }
-        write(data);
-    }
-    
-    public void motors3(byte l, byte r, byte action, boolean speedReg, boolean motorSync) {
-        byte[] data = { 0x0c, 0x00, (byte) 0x80, 0x04, 0x02, 0x32, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
-                        0x0c, 0x00, (byte) 0x80, 0x04, 0x01, 0x32, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
-                        0x0c, 0x00, (byte) 0x80, 0x04, 0x00, 0x32, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00 };
-        
-        //Log.i("NXT", "motors3: " + Byte.toString(l) + ", " + Byte.toString(r) + ", " + Byte.toString(action));
-        
-        data[5] = l;
-        data[19] = r;
-        data[33] = action;
         if (speedReg) {
             data[7] |= 0x01;
             data[21] |= 0x01;
@@ -235,6 +203,7 @@ public class NXTTalker {
             r = mConnectedThread;
         }
         r.write(out);
+        msDelay(500);
     }
     
     private class ConnectThread extends Thread {
@@ -347,7 +316,6 @@ public class NXTTalker {
                             processMessage(byteMessage);
                             log(message);
                             
-                            	msDelay(1000);
 							
                             currentPosition = endPosition;
                             startPosition = endPosition;
@@ -359,14 +327,14 @@ public class NXTTalker {
                     //log(Integer.toString(bytes) + " bytes read from device");
                 } catch (IOException e) {
                     e.printStackTrace();
+                    cancel();
                     connectionLost();
-                    log("Boom");
                     break;
                 }
             }
         }
         
-        public void write(byte[] buffer) {
+        public synchronized void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
             } catch (IOException e) {
@@ -378,6 +346,8 @@ public class NXTTalker {
         
         public void cancel() {
             try {
+            	mmInStream.close();
+            	mmOutStream.close();
                 mmSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -386,20 +356,22 @@ public class NXTTalker {
     }
     
     private class DistanceThread extends Thread {
+    	private volatile boolean runThread = true;
     	public void run() {
     			msDelay(1000);
     		initUltrasonic();
-    		while(true)
+    		while(runThread)
     		{
     			requestDistance();
-    			msDelay(1000);
         		requestStatus();
-        		msDelay(1000);
         		readDistance();
-        		msDelay(2000);
     		
     		}
     		
+    	}
+    	public void cancel()
+    	{
+    		runThread = false;
     	}
     }
     public static void msDelay(long period)
