@@ -17,7 +17,9 @@ import android.os.Message;
  *
  */
 public enum CommandType {
-	DISTANCE_RESPONSE(DistanceResponse.class, (byte)0x02, (byte)0x10, (byte)0x00);
+	
+	//Determine how to detect the distance response...
+	DISTANCE_RESPONSE(DistanceResponse.class);
 	private Class commandClass;
 	private byte[] commandPrefix;
 	private CommandType(Class commandClass, byte...commandPrefix) {
@@ -50,10 +52,8 @@ public enum CommandType {
 					msg.obj = response;
 			        nxtHandler.sendMessage(msg);
 				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				

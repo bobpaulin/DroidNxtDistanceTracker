@@ -29,18 +29,7 @@ public class LogFragment extends AbstractNxtFragment {
         
         final EditText editText = (EditText) rootView.findViewById(R.id.editText1);
         
-        getHandler().registerHandlerAction(new HandlerAction() {
-			
-			@Override
-			public void executeHandlerAction(Message msg) {
-				switch (msg.what) {
-            	case NXTConstants.MESSAGE_EDIT_TEXT:
-            		editText.getText().append(msg.getData().getString(NXTConstants.LOG_MESSAGE) + "\n");
-            		break;
-            }
-				
-			}
-		});
+        // TODO Register a handler to log messages from the NXT. See MainFragment for Example
         
         return rootView;
     }

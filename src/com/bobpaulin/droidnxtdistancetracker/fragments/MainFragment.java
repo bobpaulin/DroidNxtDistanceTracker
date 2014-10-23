@@ -104,18 +104,8 @@ public class MainFragment extends AbstractNxtFragment {
         			}
         		} else if (msg.what == NXTConstants.MESSAGE_NXT_RESPONSE)
         		{
-        			DistanceResponse response = (DistanceResponse) msg.obj;
-        			int distance = response.getDistance();
-        			distanceValueText.setText(Integer.toString(distance));
-        			if(distance > 20 && !motorRunning)
-        			{
-        				getTalker().motors((byte)20, (byte)20, false, true);
-        				motorRunning = true;
-        			}
-        			else if(distance <= 20 && motorRunning){
-        				getTalker().motors((byte)0, (byte) 0, false, true);
-        				motorRunning = false;
-        			}
+        			// TODO Implement how the distance response updates the GUI 
+        			//and tells the motors when to go
         			
         		}
 				

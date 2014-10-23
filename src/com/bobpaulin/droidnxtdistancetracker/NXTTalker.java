@@ -158,9 +158,9 @@ public class NXTTalker {
                         0x0c, 0x00, (byte) 0x80, 0x04, 0x01, 0x32, 0x07, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00};
         
         //Log.i("NXT", "motors: " + Byte.toString(l) + ", " + Byte.toString(r));
-        
-        data[5] = l;
-        data[19] = r;
+        // TODO send the correct data to the motors based on the l and r parameters
+        //See Appendix 2 SETOUTPUTSTATE
+       
         if (speedReg) {
             data[7] |= 0x01;
             data[21] |= 0x01;
@@ -174,6 +174,7 @@ public class NXTTalker {
     
     public void initUltrasonic()
     {
+    	//See Appendex 2 - LS Write Command  AND Appendix 7 - for Ultrasonic sensor
     	log("Init Ultrasonic");
     	byte[] data = {0x08, 0x00, 0x00, 0x0f, 0x03, 0x03, 0x00, 0x02, 0x41, 0x02,
     			0x05, 0x00, (byte) 0x00, 0x05, 0x03, 0x0b, 0x00};
@@ -182,23 +183,23 @@ public class NXTTalker {
     
     public void requestDistance()
     {
+    	//See Appendex 2 - LSWRITE Command AND Appendix 7 - for Ultrasonic sensor we want to read the measurement for byte 0.
     	log("Request Distance");
-    	byte[] data = {0x07, 0x00, (byte) 0x00, 0x0F, 0x03, 0x02, 0x01, 0x02, 0x42};
-    	write(data);
+    	// TODO Create command for Requesting Distance from PORT 4
     }
     
     public void requestStatus()
     {
+    	//See Appendex 2 - LSGETSTATUS Command
     	log("Request Status");
-    	byte[] data = {0x3, 0x00, 0x00, 0x0e, 0x03};
-    	write(data);
+    	// TODO Create command for Requesting Status from PORT 4
     }
     
     public void readDistance()
     {
+    	//See Appendex 2 - LSREAD Command AND Appendix 7 - for Ultrasonic sensor we want to read the measurement for byte 0.
     	log("Read Distance");
-    	byte[] data = {0x3, 0x00, 0x00, 0x10, 0x03};
-    	write(data);
+    	// TODO Create Command for Reading the Distance value from PORT 4
     }
     
     private void write(byte[] out) {
@@ -347,7 +348,6 @@ public class NXTTalker {
             } catch (IOException e) {
                 e.printStackTrace();
                 log("Write failed");
-                // XXX?
             }
         }
         
