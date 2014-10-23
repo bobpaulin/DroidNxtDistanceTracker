@@ -1,6 +1,13 @@
 DroidNxtDistanceTracker
 =======================
 
+
+This is a lab that helps get Java developer familiar with IoT concepts using Android and the Lego NXT.  This example is based on the open source Android NXT Remote Control project
+
+
+https://code.google.com/p/nxt-remote-control
+
+
 ##Android Environment Setup - Scratch
 
 
